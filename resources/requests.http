@@ -1,0 +1,26 @@
+POST http://127.0.0.1:8000/
+User-Agent: Emacs Restclient
+Content-Type: application/json
+
+{
+    "DONE": {"C": {}},
+    "DOING": {},
+    "TODO": {},
+    "PENDING":{
+        "A": {
+            "dependencies": [
+                "C"
+            ]
+        },
+        "B": {
+            "dependencies": [
+                "A"
+            ]
+        }
+
+    }
+}
+
+# GET should tell you to use POST
+# It is also a hint that the server is live
+GET http://127.0.0.1:8000/
