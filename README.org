@@ -1,0 +1,22 @@
+#+TITLE: PACManager
+
+A naive dependencies solver to parallelize compilation.
+This is a Work In Progress.
+
+** Purpose
+Parrallel pipeline compilation is not trivial to implement, especially for jenkins and it's weird groovy.
+
+When compiling, we want to ask:
+Given current pipeline status (done projects, and pending projects) what should start compiling next ?
+
+This program should not:
+- store data
+- have an display
+- contact any other resources to gain information about projects
+- know your context before hand (pre-configuration)
+
+This program:
+- can accept a json
+- can Move json data around
+- is predicatable/functional (same input should always send the same output)
+- can be non persistently configured per request to stay predictable

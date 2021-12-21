@@ -1,0 +1,18 @@
+{
+    "DONE": {"C": {}},
+    "DOING": {},
+    "TODO": {},
+    "PENDING":{
+        "A": {
+            "dependencies": [
+                "C"
+            ]
+        },
+        "B": {
+            "dependencies": [
+                "A"
+            ]
+        }
+
+    }
+}
