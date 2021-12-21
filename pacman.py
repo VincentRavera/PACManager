@@ -14,6 +14,19 @@ def getProjects(data: dict):
     return data["DONE"], data["DOING"], data["TODO"], data["PENDING"]
 
 
+def getConfig(data: dict):
+    """Parse configuration and output functions to get project name."""
+    # Define default functions
+    def projectsnames(x: dict) -> []:
+        return x.keys()
+    config = data.get("CONFIG")
+    if config and config.get("project"):
+        def projectsnames(x: dict) -> []:  # noqa: F811
+            name = config.get("project")
+            return [v.get(name) for k, v in x.items() if v.get(name)]
+    return projectsnames
+
+
 def updateData(data: dict, todo: dict):
     """Safely update data from todo."""
     output = data.copy()
@@ -27,13 +40,17 @@ def updateData(data: dict, todo: dict):
 def pacmain(data: dict):
     """Update data if compilation is needed."""
     done, doing, todo, pending = getProjects(data)
+    getProjectNames = getConfig(data)
     for key, project in pending.items():
         # filter pending dependencies
         # dont care about external dependencies
         pending_dependencies = [i for i in project.get("dependencies")
-                                if i in pending.keys()
-                                or i in doing.keys()
-                                or i in todo.keys()]
+                                if i in getProjectNames(pending)
+                                or i in getProjectNames(doing)
+                                or i in getProjectNames(todo)]
+        # print("------")
+        # print(pending)
+        # print(getProjectNames(pending))
         if len(pending_dependencies) == 0:
             todo[key] = project.copy()
 
