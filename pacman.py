@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
+"""PACManager, a naive pipeline manager."""
 import fileinput
 import json
 import argparse
 import http.server
+import traceback
 
 from io import BytesIO
+
 
 def getProjects(data: dict):
     """Extract the project from the status."""
@@ -43,6 +46,11 @@ def pacmain(data: dict):
 # https://blog.anvileight.com/posts/simple-python-http-server/
 
 class Handler(http.server.BaseHTTPRequestHandler):
+    """
+    The most simple and bare http requests handler.
+
+    Expose Pacmain function on the web.
+    """
 
     def do_GET(self):
         """Respond to GET requests."""
@@ -54,19 +62,30 @@ class Handler(http.server.BaseHTTPRequestHandler):
         """Respond to POST requests."""
         content_length = int(self.headers['Content-Length'])
         body = self.rfile.read(content_length)
-        data = pacmain(json.loads(body.decode("utf8")))
-        self.send_response(200)
-        self.end_headers()
         response = BytesIO()
-        response.write(json.dumps(data).encode())
-        self.wfile.write(response.getvalue())
+        try:
+            data = pacmain(json.loads(body.decode("utf8")))
+            self.send_response(200)
+            self.end_headers()
+            response.write(json.dumps(data).encode())
+            self.wfile.write(response.getvalue())
+        except KeyError as e:
+            self.send_response(500,
+                               f"Cannot process input: {e}")
+
+            response.write(traceback.format_exc().encode())
+            self.wfile.write(response.getvalue())
+            self.end_headers()
 
 
 def serverMode(host, port):
     """Instanciate a simple http server."""
     print(f"Serving at: http://{host}:{port}")
     httpd = http.server.HTTPServer((host, port), Handler)
-    httpd.serve_forever()
+    try:
+        httpd.serve_forever()
+    except KeyboardInterrupt:
+        print('Exiting...')
 
 
 if __name__ == '__main__':
@@ -81,7 +100,8 @@ if __name__ == '__main__':
     parser.add_argument('--address', type=str, help="Change the adress.",
                         default='0.0.0.0',
                         required=False)
-    parser.add_argument('inputfile', type=str, help="the file path if there is no sever mode",
+    parser.add_argument('inputfile', type=str,
+                        help="the file path if there is no sever mode",
                         nargs='?')
     args = parser.parse_args()
     if args.server:

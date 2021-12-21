@@ -1,3 +1,4 @@
+# Nominal case
 POST http://127.0.0.1:8000/
 User-Agent: Emacs Restclient
 Content-Type: application/json
@@ -19,6 +20,16 @@ Content-Type: application/json
         }
 
     }
+}
+
+# Error in inputs
+POST http://127.0.0.1:8000/
+User-Agent: Emacs Restclient
+Content-Type: application/json
+
+{
+    "DONE": {"C": {}},
+    "DOING": {}
 }
 
 # GET should tell you to use POST
