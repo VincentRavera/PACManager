@@ -1,0 +1,28 @@
+{
+    "DONE": {
+        "C": {
+            "name": "joker"
+        }
+    },
+    "DOING": {},
+    "TODO": {},
+    "PENDING":{
+        "A": {
+            "name": "batman",
+            "searchfor": [
+                "joker"
+            ]
+        },
+        "B": {
+            "name": "robin",
+            "searchfor": [
+                "batman"
+            ]
+        }
+
+    },
+    "CONFIG": {
+        "project": "name",
+        "dependencies": "searchfor"
+    }
+}

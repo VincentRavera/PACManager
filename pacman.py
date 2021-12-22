@@ -19,12 +19,23 @@ def getConfig(data: dict):
     # Define default functions
     def projectsnames(x: dict) -> []:
         return x.keys()
+
+    def fetchDependencies(x: dict) -> []:
+        return x.get("dependencies")
+
     config = data.get("CONFIG")
+
     if config and config.get("project"):
         def projectsnames(x: dict) -> []:  # noqa: F811
             name = config.get("project")
             return [v.get(name) for k, v in x.items() if v.get(name)]
-    return projectsnames
+
+    if config and config.get("dependencies"):
+        def fetchDependencies(x: dict) -> []:  # noqa: F811
+            name = config.get("dependencies")
+            return x.get(name)
+
+    return projectsnames, fetchDependencies
 
 
 def updateData(data: dict, todo: dict):
@@ -40,11 +51,11 @@ def updateData(data: dict, todo: dict):
 def pacmain(data: dict):
     """Update data if compilation is needed."""
     done, doing, todo, pending = getProjects(data)
-    getProjectNames = getConfig(data)
+    getProjectNames, getDependencies = getConfig(data)
     for key, project in pending.items():
         # filter pending dependencies
         # dont care about external dependencies
-        pending_dependencies = [i for i in project.get("dependencies")
+        pending_dependencies = [i for i in getDependencies(project)
                                 if i in getProjectNames(pending)
                                 or i in getProjectNames(doing)
                                 or i in getProjectNames(todo)]

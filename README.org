@@ -20,3 +20,32 @@ This program:
 - can Move json data around
 - is predicatable/functional (same input should always send the same output)
 - can be non persistently configured per request to stay predictable
+
+So basicaly a Function as a Service (at least you don't have to re-implement it)
+
+** Usage
+Send a json to the program with shell.
+#+begin_src bash
+cat ./resources/01.json | python pacman.py
+#+end_src
+
+A basic http server is enabled, so you can send your data via curl.
+#+begin_src bash
+python pacman.py --server
+#+end_src
+
+*** Data structure
+The json is fokk
+there are four states for a project:
+1. ~DONE~: the project has compiled, nothing to do here
+2. ~DOING~: The project is compiling, don't move it, but consider it pending
+3. ~TODO~: this project needs compiling, don't move it, but consider it pending
+4. ~PENDING~: this project will be moved to TODO, if possible
+
+There is another root object, but it not a state, it is ~CONFIG~ to customize the method to differenciate the projects or the properties.
+
+examples are in ~./resources/*.json~
+
+** Possible Evolution
+*** TODO Detect cyclic dependencies
+*** TODO Use JQ in ~CONFIG~ to enable deeper configurability
