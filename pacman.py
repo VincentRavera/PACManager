@@ -9,6 +9,27 @@ import traceback
 from io import BytesIO
 
 
+class PACRootException(Exception):
+    """PACManager root exception."""
+
+    pass
+
+
+class PACyclicDependenciesException(PACRootException):
+    """PACManager cyclic dependencies exception.
+
+    Attributes:
+        data -- state where the cyclic dependencies apear
+        message -- explanation of the error
+    """
+
+    def __init__(self, data):
+        """cqdf."""
+        self.data = data
+        self.message = "Cyclic dependencies detected !"
+        super().__init__(self.message)
+
+
 def getProjects(data: dict):
     """Extract the project from the status."""
     return data["DONE"], data["DOING"], data["TODO"], data["PENDING"]
@@ -66,6 +87,30 @@ def pacmain(data: dict):
             todo[key] = project.copy()
 
     return updateData(data, todo)
+
+
+def proceed_to_done(data: dict):
+    """Simulate project to be compiled ad completed."""
+    output = data.copy()
+    output["DONE"] |= output["TODO"]
+    output["DONE"] |= output["DOING"]
+    output["TODO"] = {}
+    output["DOING"] = {}
+    return output
+
+
+def pac_no_cyclic(data: dict):
+    """Check if pending data has cyclic dependencies."""
+    done_data = proceed_to_done(data)
+    next_step = pacmain(done_data)
+    while next_step["TODO"] != {}:
+        done_data = proceed_to_done(next_step)
+        next_step = pacmain(done_data)
+    # Here we iterated so much there should not be any pending projects
+    # if any then there is a cyclic dependencies
+    if next_step["PENDING"] != {}:
+        raise PACyclicDependenciesException(next_step["PENDING"])
+    return True
 
 
 ###############################################################################

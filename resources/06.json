@@ -1,0 +1,23 @@
+{
+    "DONE": {},
+    "DOING": {},
+    "TODO": {
+    },
+    "PENDING":{
+        "rock": {
+            "dependencies": [
+                "paper"
+            ]
+        },
+        "paper": {
+            "dependencies": [
+                "scissors"
+            ]
+        },
+        "scissors": {
+            "dependencies": [
+                "rock"
+            ]
+        }
+    }
+}
